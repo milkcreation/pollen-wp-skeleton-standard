@@ -1,0 +1,284 @@
+# BEGIN WordPress
+# Les directives (lignes) entre « BEGIN WordPress » et « END WordPress » sont générées
+# dynamiquement, et doivent être modifiées uniquement via les filtres WordPress.
+# Toute modification des directives situées entre ces marqueurs sera surchargée.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+RewriteRule ^(.*)$ - [E=BASE:%1]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ %{ENV:BASE}/index.php [L]
+</IfModule>
+
+# END WordPress
+
+# RewriteBase Dynamique
+#<IfModule mod_rewrite.c>
+#RewriteEngine On
+#RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+#RewriteRule ^(.*)$ - [E=BASE:%1]
+
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^ %{ENV:BASE}/index.php [L]
+#</IfModule>
+
+# ADAPTATION MULTISITE WORPDRESS EN MODE SOUS DOSSIER (gestion des assets dans le dossier vendor)
+#<IfModule mod_rewrite.c>
+#RewriteEngine On
+#RewriteBase /
+#RewriteRule ^index\.php$ - [L]
+
+# add a trailing slash to /wp-admin
+#RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$ $1wp-admin/ [R=301,L]
+
+#RewriteCond %{REQUEST_FILENAME} -f [OR]
+#RewriteCond %{REQUEST_FILENAME} -d
+#RewriteRule ^ - [L]
+#RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $2 [L]
+#Permettre l'accès aux assets du dossier vendor (requis pour les multisites > sous dossier uniquement)
+#RewriteRule ^([_0-9a-zA-Z-]+/)?(node_modules.*) $2 [L]
+#RewriteRule ^([_0-9a-zA-Z-]+/)?(vendor.*) $2 [L]
+#RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
+#RewriteRule . index.php [L]
+#</IfModule>
+
+# SECURITE
+# @see http://wpmarmite.com/htaccess-wordpress/
+# Désactiver l'affichage du contenu des répertoires
+Options All -Indexes
+# Alternative pour empêcher le listage des répertoires
+IndexIgnore *
+# Masquer les informations du serveur
+ServerSignature Off
+# Activation du suivi des liens symboliques
+Options +FollowSymLinks
+# Choix du fuseau horaire
+SetEnv TZ Europe/Paris
+# Encodage par défaut des fichiers textes et HTML
+AddDefaultCharset UTF-8
+
+# Protéger le fichier wp-config.php
+<files wp-config.php>
+order allow,deny
+deny from all
+</files>
+# Protéger les fichiers .htaccess et .htpasswds
+<Files ~ "^.*\.([Hh][Tt][AaPp])">
+order allow,deny
+deny from all
+satisfy all
+</Files>
+
+# CACHE
+# Mise en cache des fichiers dans le navigateur
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresDefault "access plus 1 month"
+
+ExpiresByType text/html "access plus 0 seconds"
+ExpiresByType text/xml "access plus 0 seconds"
+ExpiresByType application/xml "access plus 0 seconds"
+ExpiresByType application/json "access plus 0 seconds"
+ExpiresByType application/pdf "access plus 0 seconds"
+
+ExpiresByType application/rss+xml "access plus 1 hour"
+ExpiresByType application/atom+xml "access plus 1 hour"
+
+ExpiresByType application/x-font-ttf "access plus 1 month"
+ExpiresByType font/opentype "access plus 1 month"
+ExpiresByType application/x-font-woff "access plus 1 month"
+ExpiresByType application/x-font-woff2 "access plus 1 month"
+ExpiresByType image/svg+xml "access plus 1 month"
+ExpiresByType application/vnd.ms-fontobject "access plus 1 month"
+
+ExpiresByType image/jpg "access plus 1 month"
+ExpiresByType image/jpeg "access plus 1 month"
+ExpiresByType image/gif "access plus 1 month"
+ExpiresByType image/png "access plus 1 month"
+
+ExpiresByType video/ogg "access plus 1 month"
+ExpiresByType audio/ogg "access plus 1 month"
+ExpiresByType video/mp4 "access plus 1 month"
+ExpiresByType video/webm "access plus 1 month"
+
+ExpiresByType text/css "access plus 6 month"
+ExpiresByType application/javascript "access plus 6 month"
+
+ExpiresByType application/x-shockwave-flash "access plus 1 week"
+ExpiresByType image/x-icon "access plus 1 week"
+</IfModule>
+
+# En-têtes
+Header unset ETag
+FileETag None
+<ifModule mod_headers.c>
+<filesMatch "\.(ico|jpe?g|png|gif|swf)$">
+   Header set Cache-Control "max-age=31536000, public"
+</filesMatch>
+<filesMatch "\.(css)$">
+   Header set Cache-Control "max-age=31536000, public"
+</filesMatch>
+<filesMatch "\.(js)$">
+   Header set Cache-Control "max-age=31536000, private"
+</filesMatch>
+<filesMatch "\.(x?html?|php)$">
+   Header set Cache-Control "private, must-revalidate"
+</filesMatch>
+</ifModule>
+
+# Compression des fichiers statiques
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/xhtml text/html text/plain text/xml text/javascript application/x-javascript text/css
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+    Header append Vary User-Agent env=!dont-vary
+</IfModule>
+
+AddOutputFilterByType DEFLATE text/html
+AddOutputFilterByType DEFLATE text/plain
+AddOutputFilterByType DEFLATE text/xml
+AddOutputFilterByType DEFLATE text/css
+AddOutputFilterByType DEFLATE text/javascript
+AddOutputFilterByType DEFLATE font/opentype
+AddOutputFilterByType DEFLATE application/rss+xml
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE application/json
+
+# Bloquer l'utilisation de certains scripts
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+RewriteRule ^(.*)$ - [E=BASE:%1]
+
+RewriteBase /%{ENV:BASE}
+RewriteRule ^wp-admin/includes/ - [F,L]
+RewriteRule !^wp-includes/ - [S=3]
+RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
+RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
+RewriteRule ^wp-includes/theme-compat/ - [F,L]
+
+# Protection contre les injections de fichiers
+RewriteCond %{REQUEST_METHOD} GET
+RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=http:// [OR]
+RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=(\.\.//?)+ [OR]
+RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=/([a-z0-9_.]//?)+ [NC]
+RewriteRule .* - [F]
+</IfModule>
+
+# Protections diverses (XSS, clickjacking et MIME-Type sniffing)
+<ifModule mod_headers.c>
+Header set X-XSS-Protection "1; mode=block"
+Header always append X-Frame-Options SAMEORIGIN
+Header set X-Content-Type-Options: "nosniff"
+</ifModule>
+
+# BONUS
+# Bloque l'accès l'ensemble des fichiers de configuration
+<Files ~ "^\.(.*)">
+order allow,deny
+deny from all
+satisfy all
+</Files>
+
+# Bloque les accès au fichier de contrôle distant (recommandé)
+<files xmlrpc.php>
+order allow,deny
+deny from all
+</files>
+
+# CONFIGURATION OPTIONNELLE (décommenter et modifier pour activer)
+# Éviter le spam de commentaires
+#<IfModule mod_rewrite.c>
+#RewriteCond %{REQUEST_METHOD} POST
+#RewriteCond %{REQUEST_URI} .wp-comments-post\.php*
+#RewriteCond %{HTTP_REFERER} !.monsite.com.* [OR]
+#RewriteCond %{HTTP_USER_AGENT} ^$
+#RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
+#</IfModule>
+
+# Désactiver le hotlinking de vos images
+#<IfModule mod_rewrite.c>
+#RewriteEngine On
+#RewriteCond %{HTTP_REFERER} !^$
+#RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?monsite.com [NC]
+#RewriteRule \.(jpg|jpeg|png|gif)$ http://fakeimg.pl/400x200/?text=Pas_touche_aux_images [NC,R,L]
+#</IfModule>
+
+# Bannir une adresse IP
+#<Limit GET POST>
+#order allow,deny
+#deny from xxx.xxx.xxx.xxx
+#allow from all
+#</Limit>
+
+# Empêcher les visiteurs de ces sites d'accéder au votre site
+#<IfModule mod_rewrite.c>
+#RewriteEngine on
+#RewriteCond %{HTTP_REFERER} monsite1.com [NC,OR]
+#RewriteCond %{HTTP_REFERER} monsite2.com [NC,OR]
+#RewriteRule .* - [F]
+#</ifModule>
+
+# Rediriger les visiteurs venant site vers un autre
+#<IfModule mod_rewrite.c>
+#RewriteEngine on
+#RewriteCond %{HTTP_REFERER} sitesource\.com/
+#RewriteRule ^(.*)$ http://www.sitedestination.com [R=301,L]
+#</ifModule>
+
+# Redirection d'une page quelconque
+#Redirect 301 /anciennepage/ http://www.monsite.com/nouvellepage
+# Redirection d'une nouvelle catégorie (avec renommage de category en categorie)
+#Redirect 301 /category/technologie/ http://www.monsite.com/categorie/techno/
+
+# Redirection du site sans www vers www
+#<IfModule mod_rewrite.c>
+#RewriteEngine On
+#RewriteCond %{HTTP_HOST} ^monsite.com [NC]
+#RewriteRule ^(.*)$ http://www.monsite.com/$1 [L,R=301]
+#</ifModule>
+
+# Rediriger vers la version sans www
+#<IfModule mod_rewrite.c>
+#RewriteEngine on
+#RewriteCond %{HTTP_HOST} ^www\.monsite\.com [NC]
+#RewriteRule ^(.*)$ http://monsite.com/$1 [L,R=301]
+#</ifModule>
+
+# Redirection vers HTTPS
+#<IfModule mod_rewrite.c>
+#RewriteCond     %{SERVER_PORT} ^80$
+#RewriteRule     ^(.*)$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R]
+#</ifModule>
+
+# Forcer le téléchargement pour ces types de fichiers
+#AddType application/octet-stream .doc .docx .xls .xlsx .csv .mp3 .mp4
+
+# Page de maintenance
+#<IfModule mod_rewrite.c>
+#RewriteEngine on
+#RewriteCond %{REQUEST_URI} !/maintenance.html$
+#RewriteCond %{REMOTE_ADDR} !^xxx\.xxx\.xxx\.xxx
+#RewriteRule $ /maintenance.html [R=302,L]
+#</ifModule>
+
+# Forcer la suppression du cache navigateur (décommenter et modifier pour activer)
+#<FilesMatch "\.(css|flv|gif|htm|html|ico|jpe|jpeg|jpg|js|png|pdf|swf|txt)$">
+#   <IfModule mod_expires.c>
+#       ExpiresActive Off
+#   </IfModule>
+#   <IfModule mod_headers.c>
+#       FileETag None
+#       Header unset ETag
+#       Header unset Pragma
+#       Header unset Cache-Control
+#       Header unset Last-Modified
+#       Header set Pragma "no-cache"
+#       Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+#       Header set Expires "Mon, 10 Apr 1972 00:00:00 GMT"
+#   </IfModule>
+#</FilesMatch>

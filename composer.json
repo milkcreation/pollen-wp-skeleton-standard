@@ -1,0 +1,73 @@
+{
+  "name": "pollen/wp-skeleton-standard",
+  "description": "Pollen Wordpress Skeleton - Standard Installation.",
+  "homepage": "https://www.presstify.com/pollen-solutions/wp-skeleton-standard/",
+  "keywords": [
+    "pollen solutions",
+    "skeleton",
+    "wordpress",
+    "standard"
+  ],
+  "time": "2021-01-05",
+  "authors": [
+    {
+      "name": "Jordy Manner",
+      "email": "jordy@presstify.com",
+      "role": "Developper"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://composer.presstify.com/pollen-solutions/"
+    },
+    {
+      "type":"composer",
+      "url":"https://wpackagist.org"
+    }
+  ],
+  "require": {
+    "php": ">=7.3",
+    "ext-dom": "*",
+    "ext-fileinfo": "*",
+    "ext-json": "*",
+    "ext-openssl": "*",
+    "composer/composer": "^2.0",
+    "composer/installers": "~1.0",
+    "pollen-solutions/wp-salt": "^1.0",
+    "pollen-solution/wp-base-theme": "^1.0",
+    "vlucas/phpdotenv": "^5.0",
+    "wpackagist-theme/twentytwentyone": "^1.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "extra": {
+    "installer-paths": {
+      "wp-content/plugins/{$name}": [
+        "type:wordpress-plugin"
+      ],
+      "wp-content/mu-plugins/{$name}": [
+        "type:wordpress-muplugin"
+      ],
+      "wp-content/themes/{$name}": [
+        "type:wordpress-theme"
+      ]
+    }
+  },
+  "scripts": {
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+      "vendor/bin/wp-salt >> .env"
+    ]
+  }
+}
