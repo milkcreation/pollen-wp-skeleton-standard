@@ -8,7 +8,7 @@
     "wordpress",
     "standard"
   ],
-  "time": "2021-01-05",
+  "time": "2021-01-07",
   "authors": [
     {
       "name": "Jordy Manner",
@@ -38,8 +38,8 @@
     "ext-openssl": "*",
     "composer/composer": "^2.0",
     "composer/installers": "~1.0",
-    "pollen-solutions/wp-salt": "^1.0",
     "pollen-solutions/wp-base-theme": "^1.0",
+    "pollen-solutions/wp-salt": "^1.0",
     "presstify/framework": "2.1.x-dev",
     "vlucas/phpdotenv": "^5.0",
     "wpackagist-theme/twentytwentyone": "^1.1"

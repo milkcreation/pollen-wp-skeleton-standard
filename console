@@ -4,43 +4,42 @@
 /**
  * Pollen Cli Bootstrap
  *
- * Usage :
+ * USAGE
  * ---------------------------------------------------------------------------------------------------------------------
  * # List commands
  * $ php console list
- *
- * # Run command (ex. schedule:run)
+ * # Run a command (ex. schedule:run)
  * $ php console schedule:run
  */
 
 use Dotenv\Dotenv;
 use Composer\Util\Filesystem;
 
-/** DEBUG */
+// Debogage.
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
-/**/
 
-/** ENVIRONMENT GLOBAL */
+// Définition des globales d'environnement.
 defined('DS') ?: define('DS', DIRECTORY_SEPARATOR);
 defined('ROOT_PATH') ?: define('ROOT_PATH', __DIR__);
 defined('VENDOR_PATH') ?: define('VENDOR_PATH', __DIR__ . DS . 'vendor');
 defined('CONTENT_DIR') ?: define('CONTENT_DIR', 'wp-content');
-/**/
 
-/** VENDORS */
+// Chargement des librairies tierces.
 if (file_exists(VENDOR_PATH . DS . 'autoload.php')) {
     require_once(VENDOR_PATH . DS . 'autoload.php');
 }
+
+// Chargement des variables d'environnement des fichiers .env.
 $env = Dotenv::createImmutable(ROOT_PATH);
 $env->load();
 $env->required(['DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'DB_HOST']);
+
 $fs = new Filesystem();
 defined('PUBLIC_DIR') ?: define('PUBLIC_DIR', $fs->normalizePath($_ENV['APP_PUBLIC'] ?? 'wp-content/themes/twentytwenty'));
 defined('PUBLIC_PATH') ?: define('PUBLIC_PATH', __DIR__ . PUBLIC_DIR);
-/**/
 
-/** HEADERS */
+// Entêtes par défaut
 $_SERVER['SERVER_PROTOCOL'] = $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0';
 $_SERVER['HTTP_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $_SERVER['REQUEST_METHOD']  = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -48,6 +47,7 @@ $_SERVER['REMOTE_ADDR']     = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 // @see php -i | grep php.ini
 $_SERVER['TZ'] = $_SERVER['TZ'] ?? (ini_get('date.timezone') ?: 'UTC');
 
+// Entêtes associées à l'url
 if ($url = preg_grep('/^\-\-url\=(.*)/', $argv)) {
     foreach (array_keys($url) as $k) {
         unset($argv[$k]);
@@ -58,6 +58,8 @@ if ($url = preg_grep('/^\-\-url\=(.*)/', $argv)) {
 } else {
     $url = $ENV['APP_URL'] ?? '';
 }
+
+// Entêtes associées à l'url
 $url   = $url ?: 'http://localhost';
 $parts = parse_url($url);
 if (isset($parts['host'])) {
@@ -72,18 +74,18 @@ if (isset($parts['host'])) {
 
     $_SERVER['SERVER_NAME'] = $parts['host'];
 };
+
 $_SERVER['REQUEST_URI']  = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
 $_SERVER['SERVER_PORT']  = $parts['port'] ?? '80';
 $_SERVER['QUERY_STRING'] = $parts['query'] ?? '';
-/**/
 
-/** WORDPRESS PATHS */
+// Chemin relatif de stockage de Wordpress dans le dossier public.
 defined('WP_DIR') ?: define('WP_DIR', $_ENV['WP_DIR'] ?? '');
-/**/
 
-/** WORDPRESS INIT */
+// Répertoire de stockage de Wordpress.
 if (!defined('ABSPATH')) {
     define('ABSPATH', WP_DIR ? ROOT_PATH . DS . WP_DIR . DS : ROOT_PATH . DS);
 }
+
+// Initialisation de Wordpress.
 require_once(ABSPATH . 'wp-load.php');
-/**/
