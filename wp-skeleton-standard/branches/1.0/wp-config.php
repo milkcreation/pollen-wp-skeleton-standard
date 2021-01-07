@@ -1,11 +1,9 @@
 <?php
 
 /**
- * PresstiFy Wordpress Classic
- *
+ * Wordpress Config Bootstrap
+ * @version 5.5.6
  * @author Jordy Manner <jordy@presstify.com>
- * @package presstify/wordpress-classic
- * @version 5.5.5
  */
 
 use Dotenv\Dotenv;
