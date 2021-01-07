@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "wp-skeleton-standard",
-  "version": "5.5.5",
+  "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "serve": "cross-env NODE_ENV=development webpack serve --config webpack.config.js",
@@ -97,7 +97,7 @@
   },
   "dependencies": {
     "chokidar": "^3.4.3",
-    "starter-kit": "file:./wp-content/themes/wp-base-theme"
+    "wp-base-theme": "file:./wp-content/themes/wp-base-theme"
   },
   "engines": {
     "node": ">=12.14.0"
